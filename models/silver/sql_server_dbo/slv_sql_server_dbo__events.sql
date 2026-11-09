@@ -2,28 +2,30 @@
     config(
         materialized='incremental',
         incremental_strategy='merge',
-        unique_key='event_id'
+        unique_key='event_id',
+        on_schema_change='append_new_columns',
+        event_time='created_at_utc'
     )
 }}
 
 -- =============================================================================
 -- slv_sql_server_dbo__events
 -- =============================================================================
--- Primer modelo incremental del curso (estrategia merge):
---   - Primera ejecución o --full-refresh: is_incremental() es falso y se
---     construye la tabla completa.
---   - Siguientes ejecuciones: solo se leen filas con date_load posterior al
---     máximo ya cargado en la tabla destino ({{ this }}) y se hace merge por
---     event_id.
--- Ojo: el filtro usa date_load, que es el nombre de la columna EN LA TABLA
--- DESTINO. En el origen se llama _fivetran_synced.
+-- Versión del día 5. Cambios respecto al día 2:
+--   - lookback de 1 hora: se vuelven a leer las filas de la última hora ya
+--     cargada para recoger datos que llegaron tarde. El merge por event_id
+--     evita duplicados al reprocesarlas.
+--   - on_schema_change='append_new_columns': si stg añade columnas, se añaden
+--     a la tabla. El valor por defecto es 'ignore' (las ignora en silencio).
+--   - event_time: declara la columna temporal para que los modelos microbatch
+--     que lean de aquí (fct_events) filtren cada lote automáticamente.
 -- =============================================================================
 
 with events as (
     select * from {{ ref('stg_sql_server_dbo__events') }}
     where not is_deleted
     {% if is_incremental() %}
-      and date_load > (select max(date_load) from {{ this }})
+      and date_load > (select dateadd('hour', -1, max(date_load)) from {{ this }})
     {% endif %}
 ),
 

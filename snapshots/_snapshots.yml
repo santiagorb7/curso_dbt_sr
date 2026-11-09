@@ -1,0 +1,42 @@
+# =============================================================================
+# Snapshots (SCD tipo 2) definidos en YAML
+# =============================================================================
+# Un snapshot guarda el historial de cambios de una tabla: cada versión de una
+# fila con su periodo de validez (dbt_valid_from / dbt_valid_to).
+# La definición en YAML (con `relation`) es el formato actual. El snapshot
+# budget_snapshot_check_legacy se mantiene en formato SQL clásico para que
+# podáis comparar ambos.
+# La database y el schema vienen de dbt_project.yml (snapshots:) y respetan
+# generate_schema_name, a diferencia del target_schema del formato clásico.
+# =============================================================================
+
+snapshots:
+  # --- Estrategia timestamp: hay una columna fiable de "última modificación"
+  - name: budget_snapshot_timestamp
+    relation: source('google_sheets', 'budget')
+    config:
+      unique_key: _row
+      strategy: timestamp
+      updated_at: _fivetran_synced
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
+
+  # --- Timestamp + detección de borrados: si una fila desaparece del origen,
+  #     se añade una versión con dbt_is_deleted = TRUE
+  - name: budget_snapshot_hard_deletes
+    relation: source('google_sheets', 'budget')
+    config:
+      unique_key: _row
+      strategy: timestamp
+      updated_at: _fivetran_synced
+      hard_deletes: new_record
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
+  # --- Propiedades del snapshot en formato clásico (definido en el .sql)
+  - name: budget_snapshot_check_legacy
+    description: Mismo origen con estrategia check y formato SQL clásico.
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
