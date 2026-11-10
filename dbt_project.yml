@@ -111,3 +111,6 @@ snapshots:
 vars:
   low_stock_threshold: 10
   budget_start_date: '2024-01-01'
+
+  on-run-end:
+    - "{{ log_run_summary(results) }}"
