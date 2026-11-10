@@ -1,0 +1,30 @@
+# =============================================================================
+# Selectores con nombre
+# =============================================================================
+# Guardan selecciones complejas con un nombre, para usarlas en local y en jobs:
+#   dbt build --selector gold_marketing
+# =============================================================================
+
+selectors:
+  - name: capa_silver
+    description: Todos los modelos de Silver (tag heredado de dbt_project.yml).
+    definition:
+      method: tag
+      value: silver
+
+  - name: gold_marketing
+    description: El mart de Marketing y todo lo que necesita para construirse.
+    definition:
+      method: fqn
+      value: agg_user_purchases
+      parents: true
+
+  - name: diario_sin_snapshots
+    description: Todo el proyecto salvo los snapshots, para un job diario.
+    definition:
+      union:
+        - method: fqn
+          value: "*"
+        - exclude:
+            - method: resource_type
+              value: snapshot
