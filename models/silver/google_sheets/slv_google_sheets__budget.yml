@@ -1,6 +1,6 @@
 version: 2
 
-sources:
+models:
   - name: google_sheets
     database: DEV_SILVER_DB
     schema: google_sheets
@@ -13,8 +13,8 @@ sources:
               - not_null
               - relationships:
                   arguments:
-                    to: ref('budgets')
-                    field: budget_id
+                    to: ref('products')
+                    field: product_id
               - dbt_utils.accepted_range:
                   arguments:
                     min_value: 0
