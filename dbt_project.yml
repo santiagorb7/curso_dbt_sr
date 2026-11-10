@@ -107,3 +107,7 @@ snapshots:
     +database: DEV_SILVER_DB
     +schema: snapshots
     +transient: false
+
+vars:
+  low_stock_threshold: 10
+  budget_start_date: '2024-01-01'
