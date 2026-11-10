@@ -1,11 +1,17 @@
+{{
+    config(
+        pre_hook="alter session set week_start = 0",
+        post_hook="alter session unset week_start"
+    )
+}}
+
 -- =============================================================================
 -- dim_dates
 -- =============================================================================
--- Usa la macro date_spine de dbt_utils (día 3: packages).
--- is_weekend asume que dayofweek() devuelve 0 = domingo y 6 = sábado, que es
--- el comportamiento con el parámetro WEEK_START = 0 (el valor por defecto de
--- Snowflake). Si la cuenta tiene otro valor, el cálculo sale mal: lo
--- resolveremos el día 6 con un hook.
+-- Día 6: el pre_hook fija WEEK_START = 0 en la sesión antes de construir la
+-- tabla, así dayofweek() devuelve 0 = domingo y 6 = sábado sea cual sea la
+-- configuración de la cuenta. El post_hook lo deshace para no afectar a los
+-- modelos que reutilicen la misma conexión.
 -- =============================================================================
 
 with spine as (
