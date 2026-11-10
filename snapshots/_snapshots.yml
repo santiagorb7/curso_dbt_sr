@@ -34,6 +34,21 @@ snapshots:
     columns:
       - name: dbt_scd_id
         data_tests: [unique, not_null]
+
+
+  # --- Historial de usuarios mediante la fecha de última modificación
+  - name: users_snapshot
+    relation: source('sql_server_dbo', 'users')
+    config:
+      unique_key: user_id
+      strategy: timestamp
+      updated_at: updated_at
+      hard_deletes: new_record
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
+
+        
   # --- Propiedades del snapshot en formato clásico (definido en el .sql)
   - name: budget_snapshot_check_legacy
     description: Mismo origen con estrategia check y formato SQL clásico.
