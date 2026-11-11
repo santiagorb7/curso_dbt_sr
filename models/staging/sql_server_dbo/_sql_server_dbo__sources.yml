@@ -13,7 +13,7 @@ sources:
     description: >
       Base de datos transaccional del e-commerce (SQL Server), replicada a
       Snowflake con Fivetran.
-    database: DEV_BRONZE_DB
+    database: "{{ env_var('DBT_BRONZE_DB') }}"
     schema: sql_server_dbo
 
     # Freshness: `dbt source freshness` compara max(loaded_at_field) con la

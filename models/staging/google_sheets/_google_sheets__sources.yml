@@ -1,0 +1,43 @@
+# =============================================================================
+# Source google_sheets · capa Bronze
+# =============================================================================
+# Hoja de cálculo de presupuesto, replicada a Snowflake con Fivetran.
+# Como sql_server_dbo, la database sale de DBT_BRONZE_DB y dbt solo la lee.
+# =============================================================================
+
+sources:
+  - name: google_sheets
+    description: Hojas de cálculo de Google Sheets replicadas con Fivetran.
+    database: "{{ env_var('DBT_BRONZE_DB') }}"
+    schema: google_sheets
+
+    # La hoja se actualiza a mano y con poca frecuencia: avisamos si lleva
+    # más de una semana sin sincronizar, pero nunca bloqueamos el pipeline.
+    config:
+      loaded_at_field: _fivetran_synced
+      freshness:
+        warn_after: {count: 7, period: day}
+
+    tables:
+      - name: budget
+        description: Presupuesto mensual de unidades por producto.
+        columns:
+          - name: _row
+            description: Número de fila en la hoja. Identifica la fila de forma única.
+            data_tests:
+              - unique
+              - not_null
+          - name: product_id
+            description: FK al producto presupuestado.
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('sql_server_dbo', 'products')
+                    field: product_id
+          - name: quantity
+            description: Unidades presupuestadas para el mes.
+          - name: month
+            description: Mes del presupuesto.
+          - name: _fivetran_synced
+            description: Timestamp de la última sincronización de Fivetran.

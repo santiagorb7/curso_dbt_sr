@@ -1,0 +1,19 @@
+# =============================================================================
+# Exposures: quién consume los modelos de Gold fuera de dbt
+# =============================================================================
+# Una exposure no crea nada en Snowflake: documenta un consumidor (un
+# dashboard, una aplicación, un modelo de ML) y sus dependencias, para que
+# aparezca en el linaje y se pueda seleccionar: dbt build --select +exposure:...
+# =============================================================================
+
+exposures:
+  - name: cuadro_mando_marketing
+    label: Cuadro de mando de Marketing
+    type: dashboard
+    maturity: medium
+    description: Segmentación de clientes por número de compras y gasto.
+    depends_on:
+      - ref('agg_user_purchases')
+    owner:
+      name: Equipo de Marketing Analytics
+      email: marketing-analytics@ejemplo.com

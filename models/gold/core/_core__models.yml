@@ -4,29 +4,50 @@
 
 models:
   - name: dim_users
-    description: Dimensión de usuarios enriquecida con su dirección por defecto.
+    description: >
+      Dimensión de usuarios. Modelo público con contrato: el contrato fija nombres
+      y tipos de columna, y Snowflake aplica la constraint not_null al crear la
+      tabla. Si el SQL devuelve otra forma, el build falla antes de crear nada.
+    latest_version: 2
+    config:
+      contract:
+        enforced: true
     columns:
       - name: user_id
         description: PK del usuario.
+        data_type: varchar
+        constraints:
+          - type: not_null
         data_tests:
           - unique
           - not_null
       - name: first_name
         description: Nombre.
+        data_type: varchar
       - name: last_name
         description: Apellido.
+        data_type: varchar
       - name: full_name
         description: Nombre y apellido concatenados.
+        data_type: varchar
       - name: email
         description: Email normalizado.
+        data_type: varchar
+        constraints:
+          - type: not_null
         data_tests:
           - not_null
       - name: is_valid_email_address
         description: TRUE si el email cumple el formato esperado.
+        data_type: boolean
+        constraints:
+          - type: not_null
       - name: phone_number
         description: Teléfono (puede ser nulo).
+        data_type: varchar
       - name: address_id
         description: FK a dim_addresses.
+        data_type: varchar
         data_tests:
           - relationships:
               arguments:
@@ -34,22 +55,43 @@ models:
                 field: address_id
       - name: address_line
         description: Dirección por defecto (desnormalizada).
+        data_type: varchar
       - name: zipcode
         description: Código postal.
+        data_type: varchar(20)
       - name: state
         description: Estado o provincia.
+        data_type: varchar
       - name: country
         description: País.
+        data_type: varchar
       - name: continent
         description: Continente (desde el seed country_codes).
+        data_type: varchar
       - name: registered_at_utc
         description: Timestamp UTC del alta.
+        data_type: timestamp_tz
+        constraints:
+          - type: not_null
       - name: last_updated_at_utc
         description: Timestamp UTC de la última modificación.
+        data_type: timestamp_tz
       - name: days_since_registration
         description: Días desde el alta hasta la ejecución del modelo.
+        data_type: number
       - name: date_load
         description: Timestamp de la última sincronización de Fivetran.
+        data_type: timestamp_tz
+        constraints:
+          - type: not_null
+    versions:
+      - v: 1
+        # La v1 se mantiene para los consumidores que aún usan last_updated_at_utc.
+        deprecation_date: 2027-01-31
+      - v: 2
+        columns:
+          - include: all
+            exclude: [last_updated_at_utc]
 
   - name: dim_addresses
     description: Direcciones con código ISO y continente del seed country_codes.
@@ -141,3 +183,35 @@ models:
                 field: user_id
               config:
                 store_failures: true
+
+unit_tests:
+  # Fixture CSV en el expect (tests/fixtures/dim_users__email_expected.csv) e
+  # input también desde CSV: útil cuando hay muchos casos.
+  - name: test_dim_users_valida_formato_email
+    model: dim_users
+    versions:
+      include: [2]
+    given:
+      - input: ref('slv_sql_server_dbo__users')
+        format: csv
+        fixture: slv_users__email_cases
+      - input: ref('dim_addresses')
+        rows: []
+    expect:
+      format: csv
+      fixture: dim_users__email_expected
+
+  # Filas inline: útil cuando son pocos casos y se leen mejor junto al test.
+  - name: test_dim_products_categoriza_stock
+    model: dim_products
+    given:
+      - input: ref('slv_sql_server_dbo__products')
+        rows:
+          - {product_id: p1, inventory_units: 0}
+          - {product_id: p2, inventory_units: 5}
+          - {product_id: p3, inventory_units: 100}
+    expect:
+      rows:
+        - {product_id: p1, stock_status: out_of_stock}
+        - {product_id: p2, stock_status: low_stock}
+        - {product_id: p3, stock_status: in_stock}

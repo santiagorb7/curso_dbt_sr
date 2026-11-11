@@ -1,0 +1,22 @@
+models:
+  - name: agg_user_purchases
+    description: Métricas de compra por usuario para Marketing. Grano usuario.
+    columns:
+      - name: user_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: total_orders
+        description: Número de pedidos. 0 si el usuario nunca ha comprado.
+        data_tests: [not_null]
+      - name: purchase_segment
+        description: '{{ doc("purchase_segment") }}'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['never_bought', 'one_purchase', 'two_purchases', 'three_or_more']

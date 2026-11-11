@@ -1,0 +1,27 @@
+# =============================================================================
+# Modelos Silver de google_sheets
+# =============================================================================
+
+models:
+  - name: slv_google_sheets__budget
+    description: >
+      Presupuesto deduplicado por budget_id, sin cantidades nulas y a partir de
+      var('budget_start_date').
+    columns:
+      - name: budget_id
+        data_tests: [unique, not_null]
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_sql_server_dbo__products')
+                field: product_id
+      - name: quantity_budgeted
+        description: Unidades presupuestadas. Siempre positivas.
+        data_tests:
+          - not_null
+          # Test genérico propio (tests/generic/positive_values.sql, día 4)
+          - positive_values
+      - name: budget_month
+        data_tests: [not_null]

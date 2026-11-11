@@ -10,7 +10,7 @@
 
 {{
     config(
-        target_database='DEV_SILVER_DB',
+        target_database=env_var('DBT_SILVER_DB'),
         target_schema='snapshots_legacy',
         unique_key='_row',
         strategy='check',

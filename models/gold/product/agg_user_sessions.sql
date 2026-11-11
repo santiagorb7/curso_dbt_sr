@@ -5,6 +5,7 @@
 -- Grano: una fila por (user_id, session_id).
 -- Usa por nombre las columnas *_count que genera int_events__pivoted_by_session.
 -- Día 3: la clave sustituta pasa a generarse con dbt_utils.
+-- Día 4: la conversión de segundos a minutos pasa a la macro seconds_to_minutes.
 -- =============================================================================
 
 with sessions as (

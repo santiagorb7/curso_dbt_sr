@@ -1,0 +1,26 @@
+# =============================================================================
+# Groups (día 8)
+# =============================================================================
+# Un group reúne modelos con un mismo dueño. Junto con `access` controla quién
+# puede hacer ref() a quién:
+#   - private:   solo modelos del mismo group.
+#   - protected: cualquier modelo del proyecto (valor por defecto).
+#   - public:    también otros proyectos (dbt Mesh).
+# El group y el access de cada carpeta se asignan en dbt_project.yml.
+# =============================================================================
+
+groups:
+  - name: core
+    owner:
+      name: Equipo de Datos Core
+      email: datos-core@ejemplo.com
+
+  - name: marketing
+    owner:
+      name: Equipo de Marketing Analytics
+      email: marketing-analytics@ejemplo.com
+
+  - name: product
+    owner:
+      name: Equipo de Producto
+      email: producto@ejemplo.com

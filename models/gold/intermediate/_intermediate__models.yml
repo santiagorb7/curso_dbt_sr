@@ -8,6 +8,10 @@ models:
 
   - name: int_events__pivoted_by_session
     description: Contadores de eventos por tipo. Grano (user_id, session_id).
+    # Día 8: la carpeta intermediate es private del group core, pero este
+    # modelo solo lo usa Producto (agg_user_sessions): lo movemos a su group.
+    config:
+      group: product
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

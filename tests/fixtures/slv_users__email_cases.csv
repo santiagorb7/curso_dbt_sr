@@ -1,0 +1,7 @@
+user_id,first_name,last_name,email,created_at_utc,date_load
+u1,Ana,García,ana.garcia@example.com,2024-01-01 00:00:00,2024-01-01 00:00:00
+u2,Juan,Ruiz,juan@valid.es,2024-01-01 00:00:00,2024-01-01 00:00:00
+u3,Sin,Arroba,no-es-un-email,2024-01-01 00:00:00,2024-01-01 00:00:00
+u4,Sin,Dominio,otro_invalido@,2024-01-01 00:00:00,2024-01-01 00:00:00
+u5,Con,Espacio,con espacios @example.com,2024-01-01 00:00:00,2024-01-01 00:00:00
+u6,Con,Guiones,ok-with-dashes@my-domain.io,2024-01-01 00:00:00,2024-01-01 00:00:00
