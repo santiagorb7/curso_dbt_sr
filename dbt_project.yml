@@ -116,6 +116,14 @@ models:
           owner: equipo-producto
         +group: product
 
+      int_orders__enriched:
+        +group: core
+        +access: private
+
+      int_events__pivoted_by_session:
+        +group: product
+        +access: private
+
       # Día 8 · grants declarativos (alternativa a la macro grant_select_on_gold).
       # dbt aplica el grant cada vez que construye el modelo. Descomenta y pon un
       # rol que exista en tu cuenta de Snowflake, o el build fallará:
