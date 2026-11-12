@@ -68,7 +68,7 @@ models:
     #     almacenamiento y siempre reflejan Bronze.
     staging:
       +materialized: view
-      +database: "{{ env_var('DBT_SILVER_DB') }}"
+      +database: DEV_SILVER_DB
       +tags: ['staging']
       sql_server_dbo:
         +schema: sql_server_dbo
@@ -79,7 +79,7 @@ models:
     #     no queremos repetirla en cada consulta.
     silver:
       +materialized: table
-      +database: "{{ env_var('DBT_SILVER_DB') }}"
+      +database: DEV_SILVER_DB
       +tags: ['silver']
       sql_server_dbo:
         +schema: sql_server_dbo
@@ -90,7 +90,7 @@ models:
     #     prefijo del modelo (dim_, fct_, agg_, int_).
     gold:
       +materialized: table
-      +database: "{{ env_var('DBT_GOLD_DB') }}"
+      +database: DEV_GOLD_DB
       +tags: ['gold']
       intermediate:
         +materialized: view
@@ -128,7 +128,7 @@ models:
 # Van a Silver y no a Bronze: Bronze solo la escribe la herramienta de ingesta.
 seeds:
   curso_data_engineering:
-    +database: "{{ env_var('DBT_SILVER_DB') }}"
+    +database: DEV_SILVER_DB
     +schema: seeds
     country_codes:
       # Tipos explícitos para que dbt no los infiera del CSV
@@ -144,6 +144,6 @@ seeds:
 # la historia y no se puede reconstruir desde Bronze.
 snapshots:
   curso_data_engineering:
-    +database: "{{ env_var('DBT_SILVER_DB') }}"
+    +database: DEV_SILVER_DB
     +schema: snapshots
     +transient: false
