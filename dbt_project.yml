@@ -105,24 +105,22 @@ models:
         # Dimensiones y hechos compartidos: cualquiera puede usarlos
         +group: core
         +access: public
+        +grants:
+          select: [REPORTING_ROLE]
       marketing:
         +schema: marketing
         +meta:
           owner: equipo-marketing-analytics
         +group: marketing
+        +grants:
+          select: [REPORTING_ROLE]
       product:
         +schema: product
         +meta:
           owner: equipo-producto
         +group: product
-
-      int_orders__enriched:
-        +group: core
-        +access: private
-
-      int_events__pivoted_by_session:
-        +group: product
-        +access: private
+        +grants:
+          select: [REPORTING_ROLE]
 
       # Día 8 · grants declarativos (alternativa a la macro grant_select_on_gold).
       # dbt aplica el grant cada vez que construye el modelo. Descomenta y pon un

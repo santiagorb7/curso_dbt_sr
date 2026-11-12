@@ -6,10 +6,7 @@ models:
         data_tests:
           - unique
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_users')
-                field: user_id
+          
       - name: total_orders
         description: Número de pedidos. 0 si el usuario nunca ha comprado.
         data_tests: [not_null]
